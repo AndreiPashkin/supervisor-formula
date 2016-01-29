@@ -1,0 +1,26 @@
+supervisor:
+  lookup:
+    service:
+        installed:
+          version: '>=3,<4'
+          conf_file: '/etc/supervisord.conf'
+          state:
+            - require_in:
+              - pkg: pip_installed
+          config:
+            # Refer to: http://supervisord.org/configuration.html
+            supervisord:
+              logfile: '/var/log/supervisord.log'
+              logfile_maxbytes: 15MB
+              logfile_backups: 3
+    processes:
+      running:
+        # Refer to:
+        # http://supervisord.org/configuration.html#program-x-section-settings
+        apache:
+          state:      # These settings will be merged
+            - watch:  # to supervisord.running state declaration
+              - file: /my/app/config.conf
+          settings:
+              command: /path/to/httpd -c "ErrorLog /dev/stdout" -DFOREGROUND
+              redirect_stderr: true
