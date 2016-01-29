@@ -1,0 +1,23 @@
+{% import_yaml 'supervisor/defaults.yml' as defaults %}
+{% import_yaml 'supervisor/service/default_config.yml' as default_config %}
+
+{% do defaults.setdefault('processes', {'running': {}}) %}
+
+
+{% set supervisor = salt['grains.filter_by'](
+        {'Debian':
+            {'service':
+                {'installed': {
+                    'config': default_config,
+                    'conf_file': '/etc/supervisord.conf',
+                    'init_script_file': '/etc/init.d/supervisor',
+                    'init_script_source': 'salt://supervisor/service/initscripts/debian'
+                }}}},
+        merge=defaults
+) %}
+
+{% do supervisor.update(
+  salt['pillar.get']('supervisor:lookup',
+                     default=supervisor,
+                     merge=True)
+) %}

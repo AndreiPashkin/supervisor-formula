@@ -1,0 +1,4 @@
+---
+service:
+  installed:
+    version: '>=3,<4'
