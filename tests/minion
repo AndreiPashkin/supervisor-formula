@@ -1,0 +1,6 @@
+id: supervisor-formula-test
+file_client: local
+file_roots:
+  base:
+    - /project/
+    - /project/tests/salt/

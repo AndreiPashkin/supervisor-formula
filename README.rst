@@ -12,6 +12,16 @@ and processes hosted by it.
     See the full `Salt Formulas installation and usage instructions
     <http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html>`_.
 
+
+Compatibility
+=============
+
+================== ================== ==================
+OS name            OS release         SaltStack release
+------------------ ------------------ ------------------
+Ubuntu             14.04 (Trusty)     2015.8 (Beryllium)
+================== ================== ==================
+
 Available states
 ================
 

@@ -1,10 +1,12 @@
+# -- MANAGED BY SALT, DO NOT EDIT BY HAND! -- #
 {%- if config -%}
 {%- for section, options in config.items() -%}
 {%- if options -%}
 [{{ section }}]
-{%- for option, value in options.items() %}
+{% for option, value in options.items() -%}
 {{ option }}={{ value }}
-{%- endfor %}
-{% endif %}
 {% endfor -%}
-{% endif -%}
+{%- endif %}
+{% endfor -%}
+{%- endif -%}
+# -- MANAGED BY SALT, DO NOT EDIT BY HAND! -- #

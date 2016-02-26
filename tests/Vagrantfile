@@ -1,0 +1,18 @@
+Vagrant.require_version ">= 1.8.1"
+
+Vagrant.configure(2) do |config|
+  config.vm.box = ENV.fetch('BOX', 'ubuntu/trusty32')
+  config.vm.box_check_update = false
+
+  config.vm.hostname = "supervisor-formula-test"
+
+  config.vm.synced_folder ".", "/vagrant/", disabled: true
+  config.vm.synced_folder "../", "/project/"
+
+  config.vm.boot_timeout = 1800
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--nictype1", "Am79C973"]
+    vb.memory = "200"
+  end
+end
