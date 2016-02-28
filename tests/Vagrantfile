@@ -1,7 +1,7 @@
 Vagrant.require_version ">= 1.8.1"
 
 Vagrant.configure(2) do |config|
-  config.vm.box = ENV.fetch('BOX', 'ubuntu/trusty32')
+  config.vm.box = ENV.fetch('BOX', 'pashkin/ubuntu-trusty32-salt-beryllium')
   config.vm.box_check_update = false
 
   config.vm.hostname = "supervisor-formula-test"
