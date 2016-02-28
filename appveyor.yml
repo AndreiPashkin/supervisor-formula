@@ -8,7 +8,8 @@ environment:
     SNAPSHOT: snapshot
     SSH_CONFIG: ssh_config
   matrix:
-    - BOX: pashkin/ubuntu-trusty32-salt-beryllium
+    - BOX: ubuntu/trusty32
+      SALT_VERSION: 2015.8
 init:
   - cmd: set PATH=C:\Python27;C:\Python27\Scripts;%PATH%
   - cmd: |
