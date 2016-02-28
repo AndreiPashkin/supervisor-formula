@@ -31,7 +31,7 @@ init:
       set PATH=C:\Vagrant\HashiCorp\Vagrant\bin;C:\VBox;%PATH%
 before_build:
   - cmd: cmd /C "set "PATH=%CYGWIN_ROOT%\bin;%PATH%" && make snapshot && make ssh_config"
-# build_script:
-#   - cmd: tox
+build_script:
+  - cmd: tox
 on_finish:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
