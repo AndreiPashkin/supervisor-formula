@@ -8,7 +8,7 @@ environment:
     SNAPSHOT: snapshot
     SSH_CONFIG: ssh_config
   matrix:
-    - BOX: ubuntu/trusty32
+    - BOX: pashkin/ubuntu-trusty32-salt-beryllium
       SALT_VERSION: 2015.8
 init:
   - cmd: set PATH=C:\Python27;C:\Python27\Scripts;%PATH%
@@ -32,6 +32,6 @@ init:
 before_build:
   - cmd: cmd /C "set "PATH=%CYGWIN_ROOT%\bin;%PATH%" && make snapshot && make ssh_config"
 build_script:
-  - cmd: tox
+  - cmd: tox -v
 on_finish:
   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
