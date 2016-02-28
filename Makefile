@@ -5,7 +5,7 @@ snapshot:
 	vagrant up && \
 	vagrant ssh -c "sudo apt-get update && sudo apt-get install --no-install-recommends -y python-pip" && \
 	vagrant ssh -c "wget -nv -O - https://bootstrap.saltstack.com | sudo sh -s - -P git $(TAG)" && \
-	vagrant ssh -c "sudo sh -c 'echo \"`cat ./minion`\" > /etc/salt/minion'" && \
+	vagrant ssh -c "sudo cp /project/tests/minion /etc/salt/minion'" && \
 	vagrant ssh -c "sudo mkdir -p /root/.ssh/ && sudo cp ~vagrant/.ssh/authorized_keys /root/.ssh && sudo chmod 700 /root/.ssh" && \
 	vagrant snapshot save $(SNAPSHOT)
 
