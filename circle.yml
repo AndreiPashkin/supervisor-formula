@@ -4,7 +4,8 @@ machine:
   pre:
     - cat /etc/issue
     - sudo apt-get update
-    - sudo apt-get install -t trusty-backports -y lxd lxd-client
+    - sudo apt-get install -t trusty-backports -y --force-yes lxd lxd-client:
+        timeut: 1800
     - lxc remote add images images.linuxcontainers.org || true
   environment:
     SNAPSHOT: snapshot
