@@ -12,30 +12,23 @@ from tests.utils import normalize_ini
 
 def pytest_addoption(parser):
     """Custom options."""
-    parser.addoption("--vagrant-snapshot", action="store",
-                     help="Name of the VM snapshot, that should be used by "
-                          "'vagrant' fixture.")
-    parser.addoption("--vagrantfile", action="store",
-                     help="'Vagrantfile' for 'vagrant' fixture.")
+    parser.addoption("--lxd-snapshot", action="store",
+                     help="Name of a container snapshot, that should be used "
+                          "by 'lxd_snapshot' fixture.")
 
 
-@pytest.fixture
-def vagrant(request):
+@pytest.fixture(scope='function')
+def lxd_snapshot(request, TestinfraBackend):
     """Provides a Vagrant VM in a pristine state, by reverting it to
     a snapshot, defined by `--vagrant-snapshot` option.
     Also requires `--vagrantfile` option, with location of Vagrantfile
     as a value.
     """
-    vagrantfile = request.config.getoption('--vagrantfile')
-    snapshot = request.config.getoption('--vagrant-snapshot')
+    snapshot = request.config.getoption('--lxd-snapshot')
     if snapshot is None:
-        pytest.exit("'vagrant' fixture require '--vagrant-snapshot' option.")
-    if vagrantfile is None:
-        pytest.exit("'vagrant' fixture require '--vagrantfile' option.")
-    vagrantfile_dir = os.path.dirname(vagrantfile)
+        pytest.exit("'lxd_snapshot' fixture require '--lxd-snapshot' option.")
     subprocess.check_call(
-        ['vagrant', 'snapshot', 'restore', snapshot],
-        cwd=vagrantfile_dir
+        ['lxc', 'restore', TestinfraBackend.hostname, snapshot],
     )
 
 
