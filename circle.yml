@@ -4,7 +4,7 @@ machine:
   pre:
     - cat /etc/issue
     - sudo apt-get update
-    - sudo apt-get install -t trusty-backports -y --force-yes lxc:
+    - sudo apt-get install -t trusty-backports -y --force-yes lxc
   environment:
     CONTAINER: test
 
