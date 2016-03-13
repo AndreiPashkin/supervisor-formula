@@ -1,7 +1,7 @@
 # -- MANAGED BY SALT, DO NOT EDIT BY HAND! -- #
 {%- if config -%}
 {%- for section, options in config.items() -%}
-{%- if options -%}
+{%- if options %}
 [{{ section }}]
 {% for option, value in options.items() -%}
 {{ option }}={{ value }}

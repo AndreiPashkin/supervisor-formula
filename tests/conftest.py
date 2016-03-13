@@ -12,24 +12,34 @@ from tests.utils import normalize_ini
 
 def pytest_addoption(parser):
     """Custom options."""
-    parser.addoption("--lxd-snapshot", action="store",
+    parser.addoption("--lxc-snapshot", action="store",
                      help="Name of a container snapshot, that should be used "
                           "by 'lxd_snapshot' fixture.")
 
 
 @pytest.fixture(scope='function')
-def lxd_snapshot(request, TestinfraBackend):
+def lxc_snapshot(request, TestinfraBackend):
     """Provides a Vagrant VM in a pristine state, by reverting it to
     a snapshot, defined by `--vagrant-snapshot` option.
     Also requires `--vagrantfile` option, with location of Vagrantfile
     as a value.
     """
-    snapshot = request.config.getoption('--lxd-snapshot')
+    snapshot = request.config.getoption('--lxc-snapshot')
     if snapshot is None:
-        pytest.exit("'lxd_snapshot' fixture require '--lxd-snapshot' option.")
-    subprocess.check_call(
-        ['lxc', 'restore', TestinfraBackend.hostname, snapshot],
-    )
+        pytest.exit("'lxc_snapshot' fixture require '--lxc-snapshot' option.")
+    stop = ['lxc-stop',
+            '--name', TestinfraBackend.hostname]
+    restore = ['lxc-snapshot',
+               '--name', TestinfraBackend.hostname,
+               '--restore', snapshot]
+    start = ['lxc-start',
+            '--name', TestinfraBackend.hostname]
+    if TestinfraBackend.sudo:
+        stop, restore, start = [['sudo'] + cmd
+                                      for cmd in [stop, restore, start]]
+    subprocess.call(stop)
+    subprocess.check_call(restore)
+    subprocess.check_call(start)
 
 
 @pytest.fixture

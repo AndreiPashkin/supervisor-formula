@@ -7,7 +7,7 @@ import pytest
 from tests.utils import summary
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_configured(
     Command, is_config_exists, is_config_the_default,
     is_supervisor_enabled, is_supervisor_running
@@ -24,7 +24,7 @@ def test_service_configured(
     assert not is_supervisor_running()
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_configured_idempotent(Command):
     """'supervisor.service.configured' state is idempotent."""
     for _ in range(2):
@@ -36,7 +36,7 @@ def test_service_configured_idempotent(Command):
     assert actual_summary['changed'] == 0, configured.stdout
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_installed(
     Command, is_config_exists, is_config_the_default,
     is_supervisor_enabled, is_supervisor_running
@@ -55,7 +55,7 @@ def test_service_installed(
     assert not is_supervisor_running()
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_installed_idempotent(Command):
     """'supervisor.service.installed' state is idempotent."""
     for _ in range(2):
@@ -67,7 +67,7 @@ def test_service_installed_idempotent(Command):
     assert actual_summary['changed'] == 0, installed.stdout
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_running(
     Command, is_config_exists, is_config_the_default,
     is_supervisor_enabled, is_supervisor_running
@@ -87,7 +87,7 @@ def test_service_running(
     assert is_config_the_default()
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_running_idempotent(Command):
     """'supervisor.service.running' is idempotent."""
     for _ in range(2):
@@ -99,7 +99,7 @@ def test_service_running_idempotent(Command):
     assert actual_summary['changed'] == 0, running.stdout
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_dead(Command, is_supervisor_enabled, is_supervisor_running):
     """'supervisor.service.dead' state disables and shuts down
     the service.
@@ -115,7 +115,7 @@ def test_service_dead(Command, is_supervisor_enabled, is_supervisor_running):
     assert not is_supervisor_running()
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_service_dead_idempotent(Command):
     """'supervisor.service.dead' state is idempotent."""
     running = Command('salt-call --out=json '
@@ -133,16 +133,26 @@ def test_service_dead_idempotent(Command):
 @pytest.fixture
 def dummy():
     """Pillar, that defines a simple supervisor process."""
-    return {'supervisor': {'lookup': {'processes': {'running': {
+    return {'supervisor': {'lookup':
+    {'service': {'installed': {'config': {
+        'unix_http_server': {
+            'file': '/dev/shm/supervisor.sock'
+        },
+        'supervisorctl': {
+            'serverurl': 'unix:///dev/shm/supervisor.sock'
+        }
+    }}},
+     'processes': {'running': {
         'dummy': {
             'settings': {
-                'command': 'sh -c "while true; do sleep 10; done"'
+                'command': 'sh -c "while true; do sleep 10; done"',
+                'startsecs': '0'
             }
         }
     }}}}}
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_processes_running(Command, is_supervisor_enabled,
                            is_supervisor_running, dummy):
     """'supervisor.processes.running' state generates config,
@@ -162,7 +172,7 @@ def test_processes_running(Command, is_supervisor_enabled,
     assert 'RUNNING' in status.stdout
 
 
-@pytest.mark.usefixtures('lxd_snapshot')
+@pytest.mark.usefixtures('lxc_snapshot')
 def test_processes_running_idempotent(Command, dummy):
     """'supervisor.processes.running' state is idempotent."""
     for _ in range(2):

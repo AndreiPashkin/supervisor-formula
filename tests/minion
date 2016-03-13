@@ -3,4 +3,3 @@ file_client: local
 file_roots:
   base:
     - /salt/
-    - /salt/tests/salt/

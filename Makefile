@@ -1,7 +1,23 @@
-snapshot:
-	cd ./tests/ && \
-	lxc exec $(CONTAINER) --mode=non-interactive -- sh -c "which pip curl || (sudo apt-get update && sudo apt-get install --no-install-recommends -y python-pip curl)"
-	lxc exec $(CONTAINER) --mode=non-interactive -- sh -c "curl -L https://bootstrap.saltstack.com | sudo sh -s -- stable 2015.8"
-	lxc file push ./tests/minion $(CONTAINER)/etc/salt/minion
-	lxc config device add $(CONTAINER) share disk path=/salt/ source=$(SHARE)
-	lxc snapshot $(CONTAINER) $(SNAPSHOT)
+copy-files: require-CONTAINER
+	sudo lxc-attach -n $(CONTAINER) -- mkdir -p /salt/ /etc/salt/
+	tar -c ./supervisor | sudo lxc-attach -n $(CONTAINER) -- /bin/sh -c "tar -C /salt/ -x"
+	tar -C ./tests/salt -c . | sudo lxc-attach -n $(CONTAINER) -- /bin/sh -c "tar -C /salt/ -x"
+	tar -C ./tests/ -c minion | sudo lxc-attach -n $(CONTAINER) -- /bin/sh -c "tar -C /etc/salt/ -x"
+
+provision: require-CONTAINER require-SALT_VERSION
+	sudo lxc-attach -n $(CONTAINER) -- sh -c "which pip curl || (sudo apt-get update && sudo apt-get install --no-install-recommends -y python-pip curl)"
+	sudo lxc-attach -n $(CONTAINER) -- sh -c "curl -L https://bootstrap.saltstack.com | sudo sh -s -- stable $(SALT_VERSION)"
+
+snapshot: require-CONTAINER
+	- sudo lxc-stop -n $(CONTAINER)
+	sudo lxc-snapshot -n $(CONTAINER)
+
+require-CONTAINER:
+ifndef CONTAINER
+	$(error CONTAINER is undefined)
+endif
+
+require-SALT_VERSION:
+ifndef SALT_VERSION
+	$(error SALT_VERSION is undefined)
+endif

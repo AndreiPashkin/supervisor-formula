@@ -4,23 +4,20 @@ machine:
   pre:
     - cat /etc/issue
     - sudo apt-get update
-    - sudo apt-get install -t trusty-backports -y --force-yes lxd lxd-client:
-        timeout: 3600
-    - lxc remote add images images.linuxcontainers.org || true
+    - sudo apt-get install -t trusty-backports -y --force-yes lxc:
   environment:
-    SNAPSHOT: snapshot
-    SHARE: /tmp/share
+    CONTAINER: test
 
 dependencies:
   pre:
     - pip install tox==2.3.1
 
 test:
-  pre:
-    - git clone . $(SHARE)
   override:
-    - lxc launch images:ubuntu/trusty/amd64 trusty64
-    - sudo chown -R $(sudo ls -l /var/lib/lxd/containers | grep trusty64 | cut -f3 -d ' ') $(SHARE)
-    - SNAPSHOT=snapshot CONTAINER=trusty64 make snapshot
-    - tox -v -e main:
+    - lxc-create -B overlayfs -t download -n $(CONTAINER) -- -d ubuntu -r trusty -a amd64
+    - lxc-start $(CONTAINER)
+    - SALT_VERSION=2015.8 make provision
+    - make copy-files
+    - make snapshot
+    - tox -v:
         timeout: 99999
