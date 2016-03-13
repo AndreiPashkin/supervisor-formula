@@ -14,6 +14,7 @@ dependencies:
 
 test:
   override:
+    - echo $CONTAINER
     - lxc-create -B overlayfs -t download -n $(CONTAINER) -- -d ubuntu -r trusty -a amd64
     - lxc-start $(CONTAINER)
     - SALT_VERSION=2015.8 make provision
@@ -21,3 +22,5 @@ test:
     - make snapshot
     - tox -v:
         timeout: 99999
+  post:
+    - while true; do sleep 10; done
